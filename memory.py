@@ -1,10 +1,10 @@
 from page import page;
 
-class memory:
+class Memory:
     pass;
 
-class memoryFIFO(memory):
+class MemoryFIFO(memory):
     pass;
 
-class memoryCLOCK(memory):
+class MemoryCLOCK(memory):
     pass;
