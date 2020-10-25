@@ -7,17 +7,9 @@ class Memory:
     def __init__(self):
         self.physicalMemory = [None]*MEM_LEN;
         self.virtualMemory = [];        # We assume the size of virtual memory to be infinitive
+        self.pageFaults = 0;
+        self.numberOfSwaps = 0;
         pass;
-
-    # Allocate pages in physical Memory
-    # def alloc(self, pageList):
-    #     for page in pageList:
-    #         memIndex = self.nextFreeSpace();
-    #         if memIndex == -1: 
-    #             # Not enough memory avaliable. Page fault
-    #             # Need to swap one out
-    #             memIndex = self.swapOut();
-    #         self.physicalMemory[memIndex] = page;
 
     # Allocate a page in physical Memory
     def alloc(self, pageIndex):
@@ -26,7 +18,7 @@ class Memory:
             # Not enough memory avaliable. Page fault
             # Need to swap one out
             memIndex = self.swapOut();
-        self.physicalMemory[memIndex] = Page(pageIndex);
+        self.physicalMemory[memIndex] = Page(pageIndex,1);
 
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
@@ -40,6 +32,7 @@ class Memory:
         if memIndex == -1:
             memIndex = self.swapOut();
         self.physicalMemory[memIndex] = tmpPage;
+        return memIndex;
         
 
     # Swap designated pages out of memory according to algorithm
@@ -52,16 +45,24 @@ class Memory:
     def readPage(self, pageIndex):
         tmpIndex = self.findPage(self.physicalMemory, pageIndex);
         if tmpIndex == -1: 
-            raise LookupError("No such page.");
-            return;
+            self.pageFaults += 1;
+            tmpIndex = self.findPage(self.virtualMemory, pageIndex);
+            if tmpIndex == -1:
+                self.alloc(pageIndex);
+                return;
+            tmpIndex = self.swapIn(pageIndex);
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
     
     # Write data into a certain page
     def writePage(self, pageIndex):
         tmpIndex = self.findPage(self.physicalMemory, pageIndex);
         if tmpIndex == -1: 
-            raise LookupError("No such page.");
-            return;
+            self.pageFaults += 1;
+            tmpIndex = self.findPage(self.virtualMemory, pageIndex);
+            if tmpIndex == -1:
+                self.alloc(pageIndex);
+                return;
+            tmpIndex = self.swapIn(pageIndex);
         (Page)(self.physicalMemory[tmpIndex]).dirty = 1;
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
 
