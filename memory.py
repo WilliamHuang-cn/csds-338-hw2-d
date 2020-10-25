@@ -1,11 +1,8 @@
 from page import Page;
 
-# Maximum number of pages stored in memory
-MEM_LEN = 3;
-
 class Memory:
-    def __init__(self):
-        self.physicalMemory = [None]*MEM_LEN;
+    def __init__(self, maxLen = 3):
+        self.physicalMemory = [None]*maxLen;
         self.virtualMemory = [];        # We assume the size of virtual memory to be infinitive
         self.pageFaults = 0;
         self.numberOfSwaps = 0;
@@ -82,7 +79,7 @@ class Memory:
     # Check for the next avaliable free memory space
     # Returns the index 
     def nextFreeSpace(self):
-        for x in range(MEM_LEN):
+        for x in range(self.maxLen):
             if self.physicalMemory[x] == None: return x;
         return -1;
 
