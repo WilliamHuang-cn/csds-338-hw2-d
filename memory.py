@@ -138,15 +138,16 @@ class MemoryCLOCK(Memory):
     def swapOut(self):
         flag = True
         while(flag):
-            if self.physicalMemory[self.clockHand].referenced = 0:
+            if self.physicalMemory[self.clockHand].referenced == 0:
                 page =  self.physicalMemory.pop(self.clockHand)
                 self.virtualMemory.append(page)
                 self.physicalMemory.insert(self.clockHand, None)
                 flag = False
             else:
-                self.physicalMemory[self.clockHand].referenced = 0;
-        self.clockHand = self.clockHand + 1;
-        return clockHand
+                self.physicalMemory[self.clockHand].referenced = 0
+        self.clockHand = self.clockHand + 1
+        result = self.clockHand
+        return result
             
         pass;
     pass;
