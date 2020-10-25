@@ -91,8 +91,8 @@ class Memory:
 
     def findPage(self, memory, pageIndex):
         tmpIndex = -1;
-        for x in range(len(self.virtualMemory)):
-            if self.virtualMemory[x].index == pageIndex:
+        for x in range(len(memory)):
+            if memory[x] != None and memory[x].index == pageIndex:
                 tmpIndex = x;
                 break;
         return tmpIndex;
@@ -121,9 +121,11 @@ class MemoryFIFO(Memory):
         memIndex = self.nextFreeSpace();
         if memIndex == -1:
             memIndex = self.swapOut();
+        else: self.numberOfSwaps += 1;
         self.physicalMemory[memIndex] = tmpPage;
         for x in self.physicalMemory:
             if x != None: x.age += 1
+        return memIndex
 
     # Override with FIFO algorithm
     def swapOut(self):
@@ -132,6 +134,7 @@ class MemoryFIFO(Memory):
         outPage.age = 0;
         self.virtualMemory.append(outPage);
         self.physicalMemory[index] = None;
+        self.numberOfSwaps += 1;
         return index;
 
 class MemoryCLOCK(Memory):
@@ -150,5 +153,6 @@ class MemoryCLOCK(Memory):
             self.physicalMemory[self.clockHand].referenced = 0
             self.clockHand += 1
             self.clockHand %= len(self.physicalMemory)
+        self.numberOfSwaps += 1;
         return self.clockHand
          
