@@ -21,13 +21,27 @@ class Memory:
 
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
-        pass;
+        # Find page in virtual memtory
+        tmpIndex = -1;
+        for x in range(len(self.virtualMemory)):
+            if self.virtualMemory[x].index == pageIndex:
+                tmpIndex = x;
+                break;
+        if tmpIndex == -1: 
+            raise LookupError("Page not found in virtual memory.");
+        tmpPage = self.virtualMemory.pop(tmpIndex);
+        # Get a free position, or swap one out 
+        memIndex = self.nextFreeSpace();
+        if memIndex == -1:
+            memIndex = self.swapOut();
+        self.physicalMemory[memIndex] = tmpPage;
+        
 
     # Swap designated pages out of memory according to algorithm
     # Need to be override with subclasses 
     # Returns the memory index of the page being swapped out
     def swapOut(self):
-        raise BufferError("No swap algorithm specified. Cannot swap out to virtual memory");
+        raise NotImplementedError("No swap algorithm specified. Cannot swap out to virtual memory.");
 
     # Read from a certain page
     def accessPage(self, pageIndex):
