@@ -1,5 +1,5 @@
 from random import *
-from d.memory import MemoryFIFO, MemoryCLOCK
+from memory import MemoryFIFO, MemoryCLOCK
 
 MAX_PAGE_NUM = 10;
 RAND_SEED = 42;
@@ -16,9 +16,9 @@ class Requests:
     def nextPage(self, method='uniform'):
         roll = -1
         if method == 'uniform':
-            roll = random.randint(0,MAX_PAGE_NUM);
+            roll = self.uniform();
         if method == 'exp':
-            roll = random.expovariate(1.0/MAX_PAGE_NUM);
+            roll = self.exp();
         if method == 'c':
             pass;
         # Roll for read or write
@@ -36,3 +36,14 @@ class Requests:
             except LookupError as e:
                 self.memory.alloc(roll);
         return;
+
+    def uniform(self):
+        return random.randint(0,MAX_PAGE_NUM);
+
+    def exp(self):
+        roll = random.expovariate(1.0/MAX_PAGE_NUM);
+        if roll > MAX_PAGE_NUM: roll = MAX_PAGE_NUM;
+        roll = round(roll, None);
+        return roll;
+    
+
