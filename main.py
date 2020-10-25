@@ -9,6 +9,8 @@ MAX_PAGE_NUM = 10;
 # Maximum number of pages stored in memory
 MEM_LEN = 3;
 
+DEBUG = 1;
+
 if __name__ == "__main__":
 
     requests = Requests(MAX_PAGE_NUM, RAND_SEED);
@@ -24,9 +26,65 @@ if __name__ == "__main__":
     clock = MemoryCLOCK();
 
     for x in range(NUM_REQUESTS):
-        ran = requests.nextPage();
+        ran = requests.nextPage('uniform');
         fifo.readPage(ran);
         clock.readPage(ran);
+        if DEBUG == 1:
+            print('Generated page index: '+str(ran));
+            print(fifo);
+            print(clock);
     
-    print();
+    print('FIFO page faults: '+str(fifo.pageFaults));
+    print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
+    print('FIFO hit ratio: '+str(fifo.hit/1000));
+
+    print('CLOCK page faults: '+str(clock.pageFaults));
+    print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
+    print('CLOCK hit ratio: '+str(clock.hit/1000));
+
+    print('---------------------------------------------------------------------')
+    print('Type B request pattern: Exponential distribution')
+
+    fifo = MemoryFIFO();
+    clock = MemoryCLOCK();
+
+    for x in range(NUM_REQUESTS):
+        ran = requests.nextPage('exp');
+        fifo.readPage(ran);
+        clock.readPage(ran);
+        if DEBUG == 1:
+            print('Generated page index: '+str(ran));
+            print(fifo);
+            print(clock);
+    
+    print('FIFO page faults: '+str(fifo.pageFaults));
+    print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
+    print('FIFO hit ratio: '+str(fifo.hit/1000));
+
+    print('CLOCK page faults: '+str(clock.pageFaults));
+    print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
+    print('CLOCK hit ratio: '+str(clock.hit/1000));
+
+    print('---------------------------------------------------------------------')
+    print('Type C request pattern: Exponential distribution + Uniform over 3 to 10')
+
+    # fifo = MemoryFIFO();
+    # clock = MemoryCLOCK();
+
+    # for x in range(NUM_REQUESTS):
+    #     ran = requests.nextPage('c');
+    #     fifo.readPage(ran);
+    #     clock.readPage(ran);
+    #     if DEBUG == 1:
+    #         print('Generated page index: '+str(ran));
+    #         print(fifo);
+    #         print(clock);
+    
+    # print('FIFO page faults: '+str(fifo.pageFaults));
+    # print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
+    # print('FIFO hit ratio: '+str(fifo.hit/1000));
+
+    # print('CLOCK page faults: '+str(clock.pageFaults));
+    # print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
+    # print('CLOCK hit ratio: '+str(clock.hit/1000));
 
