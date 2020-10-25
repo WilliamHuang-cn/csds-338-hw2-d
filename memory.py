@@ -32,12 +32,29 @@ class Memory:
 class MemoryFIFO(memory):
 
     # Override with FIFO algorithm
-    def swapOut(pageIndex):
-        pass;
+    def swapOut(self):
+        int temp = 0
+        int index = 0
+        for i in range(len(physicalMemory)):
+            nextTemp = self.physicalMemory(i).age
+            if nextTemp > temp  
+                temp = nextTemp 
+                index = i
+        page = self.physicalMemory.pop(i)
+        page.age = 0
+        virtualMemory.append(page)
+        self.physicalMemory.insert(i, None)
+        return i
+        pass
 
 class MemoryCLOCK(memory):
 
     # Override with CLOCK algorithm
-    def swapOut(pageIndex):
+    def swapOut(self):
+        page =  self.physicalMemory.pop(clockHand)
+        virtualMemory.append(page)
+        self.physicalMemory.insert(clockHand, None)
+        return clockHand
+            
         pass;
     pass;
