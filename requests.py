@@ -7,29 +7,14 @@ class Requests:
         self.maxPage = maxPage;
 
     # Generates next page to be visited
-    def nextPage(self, method='uniform'):
+    def nextPage(self, method):
         roll = -1
         if method == 'uniform':
             return self.uniform();
         if method == 'exp':
             return self.exp();
         if method == 'c':
-            pass;
-        # Roll for read or write
-        # rw = random.randint(0,1);
-        # if rw == 0 :
-        #     # Read Only
-        #     try:
-        #         self.memory.readPage(roll);
-        #     except LookupError as e:
-        #         self.memory.alloc(roll);
-        # elif rw == 1:
-        #     # Write to memory
-        #     try:
-        #         self.memory.writePage(roll);
-        #     except LookupError as e:
-        #         self.memory.alloc(roll);
-        # return;
+            return self.c();
 
     def uniform(self):
         return random.randint(0,self.maxPage);
@@ -39,5 +24,10 @@ class Requests:
         if roll > self.maxPage: roll = self.maxPage;
         roll = round(roll, None);
         return roll;
+
+    def c(self):
+        
+        return;
+
     
 

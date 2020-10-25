@@ -6,7 +6,11 @@ class Memory:
         self.virtualMemory = [];        # We assume the size of virtual memory to be infinitive
         self.pageFaults = 0;
         self.numberOfSwaps = 0;
+        self.hit = 0;
         pass;
+
+    def __repr__(self):
+        return "Simulated Memory\nPhysical: {0}\nVirtual: {1}".format(self.physicalMemory,self.virtualMemory);
 
     # Allocate a page in physical Memory
     def alloc(self, pageIndex):
@@ -48,6 +52,7 @@ class Memory:
                 self.alloc(pageIndex);
                 return;
             tmpIndex = self.swapIn(pageIndex);
+        else: self.hit += 1;
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
     
     # Write data into a certain page
@@ -60,6 +65,7 @@ class Memory:
                 self.alloc(pageIndex);
                 return;
             tmpIndex = self.swapIn(pageIndex);
+        else: self.hit += 1;
         (Page)(self.physicalMemory[tmpIndex]).dirty = 1;
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
 

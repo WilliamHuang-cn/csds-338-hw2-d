@@ -9,4 +9,4 @@ class Page:
         return str(self.index);
     
     def __repr__(self):
-        return 'Page with index '+str(self.index);
+        return 'Page '+str(self.index);
