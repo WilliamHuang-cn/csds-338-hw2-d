@@ -1,4 +1,4 @@
-from page import page;
+from page import Page;
 
 # Maximum number of pages stored in memory
 MEM_LEN = 3;
@@ -22,11 +22,7 @@ class Memory:
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
         # Find page in virtual memtory
-        tmpIndex = -1;
-        for x in range(len(self.virtualMemory)):
-            if self.virtualMemory[x].index == pageIndex:
-                tmpIndex = x;
-                break;
+        tmpIndex = self.findPage(self.virtualMemory, pageIndex);
         if tmpIndex == -1: 
             raise LookupError("Page not found in virtual memory.");
         tmpPage = self.virtualMemory.pop(tmpIndex);
@@ -44,12 +40,34 @@ class Memory:
         raise NotImplementedError("No swap algorithm specified. Cannot swap out to virtual memory.");
 
     # Read from a certain page
-    def accessPage(self, pageIndex):
-        pass;
+    def readPage(self, pageIndex):
+        tmpIndex = self.findPage(self.physicalMemory, pageIndex);
+        if tmpIndex == -1: 
+            raise LookupError("No such page.");
+            return;
+        (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
+    
+    # Write data into a certain page
+    def writePage(self, pageIndex):
+        tmpIndex = self.findPage(self.physicalMemory, pageIndex);
+        if tmpIndex == -1: 
+            raise LookupError("No such page.");
+            return;
+        (Page)(self.physicalMemory[tmpIndex]).dirty = 1;
+        (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
 
     # Free a page from physical/virtual memory
     def free(self, pageIndex):
-        pass;
+        tmpIndex = self.findPage(self.physicalMemory, pageIndex);
+        if tmpIndex != -1: 
+            self.physicalMemory[tmpIndex] = None;
+        else: 
+            tmpIndex = self.findPage(self.virtualMemory, pageIndex);
+            if tmpIndex == -1:
+                raise LookupError("No such page.");
+                return;
+            self.virtualMemory.pop(tmpIndex);
+
 
     # Check for the next avaliable free memory space
     # Returns the index 
@@ -57,6 +75,14 @@ class Memory:
         for x in range(MEM_LEN):
             if self.physicalMemory[x] == None: return x;
         return -1;
+
+    def findPage(self, memory, pageIndex):
+        tmpIndex = -1;
+        for x in range(len(self.virtualMemory)):
+            if self.virtualMemory[x].index == pageIndex:
+                tmpIndex = x;
+                break;
+        return tmpIndex;
 
 class MemoryFIFO(memory):
 
