@@ -84,14 +84,14 @@ class Memory:
                 break;
         return tmpIndex;
 
-class MemoryFIFO(memory):
+class MemoryFIFO(Memory):
 
     # Override with FIFO algorithm
     def swapOut(self):
         temp = 0
         index = 0
         for i in range(len(physicalMemory)):
-            nextTemp = self.physicalMemory(i).age
+            nextTemp = self.physicalMemory[i].age
             if nextTemp > temp:
                 temp = nextTemp 
                 index = i
@@ -102,7 +102,7 @@ class MemoryFIFO(memory):
         return i
         pass
 
-class MemoryCLOCK(memory):
+class MemoryCLOCK(Memory):
 
     # Override with CLOCK algorithm
     def swapOut(self):
