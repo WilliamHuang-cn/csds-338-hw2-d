@@ -88,11 +88,11 @@ class MemoryFIFO(memory):
 
     # Override with FIFO algorithm
     def swapOut(self):
-        int temp = 0
-        int index = 0
+        temp = 0
+        index = 0
         for i in range(len(physicalMemory)):
             nextTemp = self.physicalMemory(i).age
-            if nextTemp > temp  
+            if nextTemp > temp:
                 temp = nextTemp 
                 index = i
         page = self.physicalMemory.pop(i)
