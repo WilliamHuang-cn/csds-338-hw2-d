@@ -10,14 +10,23 @@ class Memory:
         pass;
 
     # Allocate pages in physical Memory
-    def alloc(self, pageList):
-        for page in pageList:
-            memIndex = self.nextFreeSpace();
-            if memIndex == -1: 
-                # Not enough memory avaliable. Page fault
-                # Need to swap one out
-                memIndex = self.swapOut();
-            self.physicalMemory[memIndex] = page;
+    # def alloc(self, pageList):
+    #     for page in pageList:
+    #         memIndex = self.nextFreeSpace();
+    #         if memIndex == -1: 
+    #             # Not enough memory avaliable. Page fault
+    #             # Need to swap one out
+    #             memIndex = self.swapOut();
+    #         self.physicalMemory[memIndex] = page;
+
+    # Allocate a page in physical Memory
+    def alloc(self, pageIndex):
+        memIndex = self.nextFreeSpace();
+        if memIndex == -1: 
+            # Not enough memory avaliable. Page fault
+            # Need to swap one out
+            memIndex = self.swapOut();
+        self.physicalMemory[memIndex] = Page(pageIndex);
 
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
