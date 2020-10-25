@@ -1,24 +1,25 @@
 from page import Page;
 
-# Maximum number of pages stored in memory
-MEM_LEN = 3;
-
 class Memory:
-    def __init__(self):
-        self.physicalMemory = [None]*MEM_LEN;
+    def __init__(self, maxLen = 3):
+        self.physicalMemory = [None]*maxLen;
         self.virtualMemory = [];        # We assume the size of virtual memory to be infinitive
-        self.clockHand = 0;
+        self.pageFaults = 0;
+        self.numberOfSwaps = 0;
+        self.hit = 0;
         pass;
 
-    # Allocate pages in physical Memory
-    def alloc(self, pageList):
-        for page in pageList:
-            memIndex = self.nextFreeSpace();
-            if memIndex == -1: 
-                # Not enough memory avaliable. Page fault
-                # Need to swap one out
-                memIndex = self.swapOut();
-            self.physicalMemory[memIndex] = page;
+    def __repr__(self):
+        return "Simulated Memory\nPhysical: {0}\nVirtual: {1}".format(self.physicalMemory,self.virtualMemory);
+
+    # Allocate a page in physical Memory
+    def alloc(self, pageIndex):
+        memIndex = self.nextFreeSpace();
+        if memIndex == -1: 
+            # Not enough memory avaliable. Page fault
+            # Need to swap one out
+            memIndex = self.swapOut();
+        self.physicalMemory[memIndex] = Page(pageIndex,1);
 
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
@@ -32,6 +33,7 @@ class Memory:
         if memIndex == -1:
             memIndex = self.swapOut();
         self.physicalMemory[memIndex] = tmpPage;
+        return memIndex;
         
 
     # Swap designated pages out of memory according to algorithm
@@ -44,16 +46,26 @@ class Memory:
     def readPage(self, pageIndex):
         tmpIndex = self.findPage(self.physicalMemory, pageIndex);
         if tmpIndex == -1: 
-            raise LookupError("No such page.");
-            return;
+            self.pageFaults += 1;
+            tmpIndex = self.findPage(self.virtualMemory, pageIndex);
+            if tmpIndex == -1:
+                self.alloc(pageIndex);
+                return;
+            tmpIndex = self.swapIn(pageIndex);
+        else: self.hit += 1;
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
     
     # Write data into a certain page
     def writePage(self, pageIndex):
         tmpIndex = self.findPage(self.physicalMemory, pageIndex);
         if tmpIndex == -1: 
-            raise LookupError("No such page.");
-            return;
+            self.pageFaults += 1;
+            tmpIndex = self.findPage(self.virtualMemory, pageIndex);
+            if tmpIndex == -1:
+                self.alloc(pageIndex);
+                return;
+            tmpIndex = self.swapIn(pageIndex);
+        else: self.hit += 1;
         (Page)(self.physicalMemory[tmpIndex]).dirty = 1;
         (Page)(self.physicalMemory[tmpIndex]).referenced = 1;
 
@@ -73,31 +85,29 @@ class Memory:
     # Check for the next avaliable free memory space
     # Returns the index 
     def nextFreeSpace(self):
-        for x in range(MEM_LEN):
+        for x in range(len(self.physicalMemory)):
             if self.physicalMemory[x] == None: return x;
         return -1;
 
     def findPage(self, memory, pageIndex):
         tmpIndex = -1;
-        for x in range(len(self.virtualMemory)):
-            if self.virtualMemory[x].index == pageIndex:
+        for x in range(len(memory)):
+            if memory[x] != None and memory[x].index == pageIndex:
                 tmpIndex = x;
                 break;
         return tmpIndex;
 
 class MemoryFIFO(Memory):
-
-    # Allocate pages in physical Memory
-    def alloc(self, pageList):
-        for page in pageList:
-            memIndex = self.nextFreeSpace();
-            if memIndex == -1: 
-                # Not enough memory avaliable. Page fault
-                # Need to swap one out
-                memIndex = self.swapOut();
-            self.physicalMemory[memIndex] = page;
-        for i in range(len(self.physicalMemory)):
-            self.physicalMemory[i].age = self.physicalMemory[i].age + 1
+    # Allocate a page in physical Memory
+    def alloc(self, pageIndex):
+        memIndex = self.nextFreeSpace();
+        if memIndex == -1: 
+            # Not enough memory avaliable. Page fault
+            # Need to swap one out
+            memIndex = self.swapOut();
+        self.physicalMemory[memIndex] = Page(pageIndex,1);
+        for x in self.physicalMemory:
+            if x != None: x.age += 1
 
 
     # Swap designated pages in to memory
@@ -111,43 +121,38 @@ class MemoryFIFO(Memory):
         memIndex = self.nextFreeSpace();
         if memIndex == -1:
             memIndex = self.swapOut();
+        else: self.numberOfSwaps += 1;
         self.physicalMemory[memIndex] = tmpPage;
-        for i in range(len(self.physicalMemory)):
-            self.physicalMemory[i].age = self.physicalMemory[i].age + 1
+        for x in self.physicalMemory:
+            if x != None: x.age += 1
+        return memIndex
 
     # Override with FIFO algorithm
     def swapOut(self):
-        temp = 0
-        index = 0
-        for i in range(len(self.physicalMemory)):
-            nextTemp = self.physicalMemory[i].age
-            if nextTemp > temp:
-                temp = nextTemp 
-                index = i
-        page = self.physicalMemory.pop(i)
-        page.age = 0
-        self.virtualMemory.append(page)
-        self.physicalMemory.insert(i, None)
-        return index
-        pass
+        outPage = max(self.physicalMemory, key=lambda x:x.age);
+        index = self.physicalMemory.index(outPage);
+        outPage.age = 0;
+        self.virtualMemory.append(outPage);
+        self.physicalMemory[index] = None;
+        self.numberOfSwaps += 1;
+        return index;
 
 class MemoryCLOCK(Memory):
 
+    def __init__(self, maxLen=3):
+        Memory.__init__(self, maxLen); 
+        self.clockHand = 0;
    
     # Override with CLOCK algorithm
     def swapOut(self):
-        flag = True
-        while(flag):
+        while(True):
             if self.physicalMemory[self.clockHand].referenced == 0:
-                page =  self.physicalMemory.pop(self.clockHand)
-                self.virtualMemory.append(page)
-                self.physicalMemory.insert(self.clockHand, None)
-                flag = False
-            else:
-                self.physicalMemory[self.clockHand].referenced = 0
-        self.clockHand = self.clockHand + 1
-        result = self.clockHand
-        return result
-            
-        pass;
-    pass;
+                self.virtualMemory.append(self.physicalMemory[self.clockHand]);
+                self.physicalMemory[self.clockHand] = None;
+                break;
+            self.physicalMemory[self.clockHand].referenced = 0
+            self.clockHand += 1
+            self.clockHand %= len(self.physicalMemory)
+        self.numberOfSwaps += 1;
+        return self.clockHand
+         
