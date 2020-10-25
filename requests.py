@@ -1,9 +1,9 @@
-from random import *
+import random
 from memory import MemoryFIFO, MemoryCLOCK
 
 class Requests:
-    def __init__(self, maxPage, seed=None):
-        random.seed(seed);
+    def __init__(self, maxPage, ranSeed=None):
+        random.seed(ranSeed);
         self.maxPage = maxPage;
 
     # Generates next page to be visited
@@ -26,7 +26,7 @@ class Requests:
         return roll;
 
     def c(self):
-        
+
         return;
 
     

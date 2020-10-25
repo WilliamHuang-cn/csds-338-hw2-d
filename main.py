@@ -2,9 +2,9 @@ from memory import MemoryCLOCK, MemoryFIFO
 from requests import Requests
 
 # Total number of request generated
-NUM_REQUESTS = 100;
-RAND_SEED = 42;
-MAX_PAGE_NUM = 10;
+NUM_REQUESTS = 10;
+RAND_SEED = 4;
+MAX_PAGE_NUM = 5;
 
 # Maximum number of pages stored in memory
 MEM_LEN = 3;
@@ -33,40 +33,41 @@ if __name__ == "__main__":
             print('Generated page index: '+str(ran));
             print(fifo);
             print(clock);
+            print();
     
     print('FIFO page faults: '+str(fifo.pageFaults));
     print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
-    print('FIFO hit ratio: '+str(fifo.hit/1000));
+    print('FIFO hit ratio: '+str(fifo.hit/NUM_REQUESTS));
 
     print('CLOCK page faults: '+str(clock.pageFaults));
     print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
-    print('CLOCK hit ratio: '+str(clock.hit/1000));
+    print('CLOCK hit ratio: '+str(clock.hit/NUM_REQUESTS));
 
-    print('---------------------------------------------------------------------')
-    print('Type B request pattern: Exponential distribution')
+    # print('---------------------------------------------------------------------')
+    # print('Type B request pattern: Exponential distribution')
 
-    fifo = MemoryFIFO();
-    clock = MemoryCLOCK();
+    # fifo = MemoryFIFO();
+    # clock = MemoryCLOCK();
 
-    for x in range(NUM_REQUESTS):
-        ran = requests.nextPage('exp');
-        fifo.readPage(ran);
-        clock.readPage(ran);
-        if DEBUG == 1:
-            print('Generated page index: '+str(ran));
-            print(fifo);
-            print(clock);
+    # for x in range(NUM_REQUESTS):
+    #     ran = requests.nextPage('exp');
+    #     fifo.readPage(ran);
+    #     clock.readPage(ran);
+    #     if DEBUG == 1:
+    #         print('Generated page index: '+str(ran));
+    #         print(fifo);
+    #         print(clock);
     
-    print('FIFO page faults: '+str(fifo.pageFaults));
-    print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
-    print('FIFO hit ratio: '+str(fifo.hit/1000));
+    # print('FIFO page faults: '+str(fifo.pageFaults));
+    # print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
+    # print('FIFO hit ratio: '+str(fifo.hit/NUM_REQUESTS));
 
-    print('CLOCK page faults: '+str(clock.pageFaults));
-    print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
-    print('CLOCK hit ratio: '+str(clock.hit/1000));
+    # print('CLOCK page faults: '+str(clock.pageFaults));
+    # print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
+    # print('CLOCK hit ratio: '+str(clock.hit/NUM_REQUESTS));
 
-    print('---------------------------------------------------------------------')
-    print('Type C request pattern: Exponential distribution + Uniform over 3 to 10')
+    # print('---------------------------------------------------------------------')
+    # print('Type C request pattern: Exponential distribution + Uniform over 3 to 10')
 
     # fifo = MemoryFIFO();
     # clock = MemoryCLOCK();
@@ -82,9 +83,9 @@ if __name__ == "__main__":
     
     # print('FIFO page faults: '+str(fifo.pageFaults));
     # print('FIFO number of swaps: '+str(fifo.numberOfSwaps));
-    # print('FIFO hit ratio: '+str(fifo.hit/1000));
+    # print('FIFO hit ratio: '+str(fifo.hit/NUM_REQUESTS));
 
     # print('CLOCK page faults: '+str(clock.pageFaults));
     # print('CLOCK number of swaps: '+str(clock.numberOfSwaps));
-    # print('CLOCK hit ratio: '+str(clock.hit/1000));
+    # print('CLOCK hit ratio: '+str(clock.hit/NUM_REQUESTS));
 

@@ -85,7 +85,7 @@ class Memory:
     # Check for the next avaliable free memory space
     # Returns the index 
     def nextFreeSpace(self):
-        for x in range(self.maxLen):
+        for x in range(len(self.physicalMemory)):
             if self.physicalMemory[x] == None: return x;
         return -1;
 
@@ -107,7 +107,7 @@ class MemoryFIFO(Memory):
             memIndex = self.swapOut();
         self.physicalMemory[memIndex] = Page(pageIndex,1);
         for x in self.physicalMemory:
-            x.age += 1
+            if x != None: x.age += 1
 
 
     # Swap designated pages in to memory
@@ -123,7 +123,7 @@ class MemoryFIFO(Memory):
             memIndex = self.swapOut();
         self.physicalMemory[memIndex] = tmpPage;
         for x in self.physicalMemory:
-            x.age += 1
+            if x != None: x.age += 1
 
     # Override with FIFO algorithm
     def swapOut(self):
@@ -149,5 +149,6 @@ class MemoryCLOCK(Memory):
                 break;
             self.physicalMemory[self.clockHand].referenced = 0
             self.clockHand += 1
+            self.clockHand %= len(self.physicalMemory)
         return self.clockHand
          
