@@ -6,32 +6,31 @@ MEM_LEN = 3;
 class Memory:
     def __init__(self):
         self.physicalMemory = [None]*MEM_LEN;
-        self.virtualMemory = [];
+        self.virtualMemory = [];        # We assume the size of virtual memory to be infinitive
         pass;
 
-    # Allocate pages into physical Memory
-    def malloc(self, pageList):
-        # WIP
-        numberOfPages = len(pageList);
-        while numberOfPages > 0:
+    # Allocate pages in physical Memory
+    def alloc(self, pageList):
+        for page in pageList:
             memIndex = self.nextFreeSpace();
             if memIndex == -1: 
-                # Not enough memory avaliable. Need to swap some out
-                pass;
-            
-            pass;
+                # Not enough memory avaliable. Page fault
+                # Need to swap one out
+                memIndex = self.swapOut();
+            self.physicalMemory[memIndex] = page;
 
     # Swap designated pages in to memory
     def swapIn(self, pageIndex):
         pass;
 
-    # Swap designated pages out of memory
+    # Swap designated pages out of memory according to algorithm
     # Need to be override with subclasses 
-    def swapOut(self, memoryIndex):
+    # Returns the memory index of the page being swapped out
+    def swapOut(self):
         raise BufferError("No swap algorithm specified. Cannot swap out to virtual memory");
 
     # Read from a certain page
-    def access(self, pageIndex):
+    def accessPage(self, pageIndex):
         pass;
 
     # Free a page from physical/virtual memory
